@@ -5,7 +5,7 @@ permalink: /about/
 ---
 
 ## Theme Monos
-> Simple and lightweight theme for Jekyll
+> ITS ME!!! 
 
 ### Features
 - Responsive.

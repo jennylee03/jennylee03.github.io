@@ -7,6 +7,8 @@ permalink: /about/
 ## JENNY YJ LEE
 - Majored in Computer Science with Management 
 - contact me via omyeues@gmail.com
+
+
 ## MY FAVOURITES
 - Data Science
 - NLP

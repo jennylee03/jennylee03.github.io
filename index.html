@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Convenience Alchemist</title>
+    <style>
+        /* --- CSS: Design System --- */
+        :root {
+            --primary: #FF7F50;    /* 식욕을 돋우는 오렌지 (GS25 느낌) */
+            --secondary: #6A5ACD;  /* 세련된 보라 (CU 느낌) */
+            --bg: #F0F2F5;
+            --surface: #FFFFFF;
+            --text-main: #2D3436;
+            --text-sub: #636E72;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--surface);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 15px 0;
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lang-btn {
+            background: var(--text-main);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .lang-btn:hover { transform: scale(1.05); }
+
+        /* Hero & Search */
+        .hero {
+            text-align: center;
+            padding: 40px 0 30px;
+        }
+        .hero h2 { margin: 0 0 10px; font-size: 1.8rem; }
+        .hero p { color: var(--text-sub); margin: 0 0 25px; }
+
+        .search-box {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: var(--primary); }
+
+        /* Filter Tags */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--text-sub);
+        }
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding-bottom: 60px;
+        }
+
+        /* Card Component */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .card-img-area {
+            height: 140px;
+            background: linear-gradient(135deg, #fff5f0 0%, #ffe4da 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .card-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-tags {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--secondary);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            margin: 0 0 8px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .card-footer {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .price-tag { color: var(--text-main); }
+        .likes { display: flex; align-items: center; gap: 4px; color: var(--text-sub); font-size: 0.8rem; }
+
+        /* Empty State */
+        .no-result {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--text-sub);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #fff;
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            border-top: 1px solid #eee;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .hero h2 { font-size: 1.5rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 헤더 -->
+    <header>
+        <div class="container header-inner">
+            <a href="#" class="logo">
+                <span>🏪</span> <span id="ui-logo">K-편의점 연금술사</span>
+            </a>
+            <button id="lang-btn" class="lang-btn" onclick="toggleLanguage()">English</button>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <!-- 히어로 섹션 -->
+        <section class="hero">
+            <h2 id="ui-title">실패 없는 편의점 꿀조합</h2>
+            <p id="ui-subtitle">오늘 야식 뭐 먹지? 고민 끝! 한국인이 검증한 레시피.</p>
+            
+            <div class="search-box">
+                <input type="text" id="search-input" class="search-input" placeholder="레시피, 재료 검색..." onkeyup="filterData()">
+            </div>
+        </section>
+
+        <!-- 필터 -->
+        <div class="filters">
+            <button class="filter-btn active" onclick="setFilter('all')">ALL</button>
+            <button class="filter-btn" onclick="setFilter('GS25')">GS25</button>
+            <button class="filter-btn" onclick="setFilter('CU')">CU</button>
+            <button class="filter-btn" onclick="setFilter('SEVEN')">7-Eleven</button>
+        </div>
+
+        <!-- 카드 그리드 (JS로 렌더링) -->
+        <div id="grid" class="grid">
+            <!-- Cards will be injected here -->
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 K-Convenience Alchemist. Project for Information Management PE.</p>
+    </footer>
+
+    <script>
+        // --- 1. DATA (JSON DB 역할) ---
+        // 실제 운영 시에는 이 부분을 외부 recipes.json 파일로 분리하면 됩니다.
+        const DB = [
+            {
+                id: 1,
+                emoji: "🍜",
+                tags: ["GS25", "Best"],
+                ko: {
+                    title: "마크정식 (Mark Meal)",
+                    desc: "갓세븐 마크가 추천한 전설의 조합. 스파게티 컵라면 + 떡볶이 + 소시지 + 치즈의 환상 콜라보.",
+                    price: "약 7,500원",
+                    ingredients: "스파게티 컵라면, 떡볶이, 후랑크 소시지, 치즈"
+                },
+                en: {
+                    title: "Mark Meal",
+                    desc: "Legendary combo by GOT7's Mark. Spaghetti ramen + Tteokbokki + Sausage + Cheese.",
+                    price: "~$6.00",
+                    ingredients: "Spaghetti Ramen, Tteokbokki, Sausage, String Cheese"
+                },
+                likes: 1240
+            },
+            {
+                id: 2,
+                emoji: "🥟",
+                tags: ["CU", "Spicy"],
+                ko: {
+                    title: "불닭 만두 그라탕",
+                    desc: "냉동만두 위에 불닭 소스와 모짜렐라 치즈를 듬뿍 올려 전자레인지에 돌리면 끝!",
+                    price: "약 5,000원",
+                    ingredients: "불닭볶음면 소스, 냉동만두, 모짜렐라 치즈"
+                },
+                en: {
+                    title: "Buldak Dumpling Gratin",
+                    desc: "Frozen dumplings topped with Buldak sauce and mozzarella cheese. Just microwave it!",
+                    price: "~$4.00",
+                    ingredients: "Buldak Sauce, Frozen Dumplings, Mozzarella Cheese"
+                },
+                likes: 850
+            },
+            {
+                id: 3,
+                emoji: "🥘",
+                tags: ["GS25", "Soup"],
+                ko: {
+                    title: "오모리 부대찌개 라면",
+                    desc: "오모리 김치찌개 라면에 소시지와 두부, 볶음김치를 추가해 끓인 초간단 부대찌개.",
+                    price: "약 4,500원",
+                    ingredients: "오모리 김치찌개 라면, 소시지, 맛김치"
+                },
+                en: {
+                    title: "Omori Budae-jjigae",
+                    desc: "Instant Army Stew made with Omori Kimchi Ramen. Add sausages and tofu for rich taste.",
+                    price: "~$3.50",
+                    ingredients: "Omori Kimchi Ramen, Sausages, Kimchi"
+                },
+                likes: 620
+            },
+            {
+                id: 4,
+                emoji: "🍹",
+                tags: ["CU", "Drink"],
+                ko: {
+                    title: "블루 레몬 아이스티",
+                    desc: "얼음컵에 블루 레몬에이드와 사이다를 1:1로 섞어 만드는 청량감 폭발 여름 음료.",
+                    price: "약 2,500원",
+                    ingredients: "얼음컵, 블루 레몬에이드 파우치, 사이다"
+                },
+                en: {
+                    title: "Blue Lemon Iced Tea",
+                    desc: "Refreshing summer drink. Mix Blue Lemonade pouch and Sprite 1:1 in an ice cup.",
+                    price: "~$2.00",
+                    ingredients: "Ice Cup, Blue Lemonade Pouch, Sprite"
+                },
+                likes: 930
+            },
+            {
+                id: 5,
+                emoji: "🍙",
+                tags: ["SEVEN", "Snack"],
+                ko: {
+                    title: "전주비빔 삼각김밥 치즈밥",
+                    desc: "삼각김밥을 전자레인지 용기에 넣고 치즈와 함께 비벼 먹는 초간단 리조또.",
+                    price: "약 2,000원",
+                    ingredients: "전주비빔 삼각김밥, 스트링 치즈"
+                },
+                en: {
+                    title: "Bibim Triangle Kimbap Risotto",
+                    desc: "Mix Jeonju Bibim Triangle Kimbap with cheese in a bowl and microwave it.",
+                    price: "~$1.50",
+                    ingredients: "Bibim Triangle Kimbap, String Cheese"
+                },
+                likes: 540
+            }
+        ];
+
+        // --- 2. UI TEXT (다국어 리소스) ---
+        const UI_TEXT = {
+            ko: {
+                logo: "🏪 K-편의점 연금술사",
+                title: "실패 없는 편의점 꿀조합",
+                subtitle: "오늘 야식 뭐 먹지? 고민 끝! 한국인이 검증한 레시피.",
+                searchPlaceholder: "레시피, 재료 검색...",
+                btnLang: "English",
+                noResult: "검색 결과가 없습니다. 😢"
+            },
+            en: {
+                logo: "🏪 K-Store Alchemist",
+                title: "Best K-Convenience Store Hacks",
+                subtitle: "Don't know what to eat? Here are Korea's favorite combos.",
+                searchPlaceholder: "Search recipes, ingredients...",
+                btnLang: "한국어",
+                noResult: "No recipes found. 😢"
+            }
+        };
+
+        // --- 3. LOGIC ---
+        let currentLang = 'ko';
+        let currentFilter = 'all';
+
+        function render() {
+            // 1. UI 텍스트 업데이트
+            document.getElementById('ui-logo').innerText = UI_TEXT[currentLang].logo;
+            document.getElementById('ui-title').innerText = UI_TEXT[currentLang].title;
+            document.getElementById('ui-subtitle').innerText = UI_TEXT[currentLang].subtitle;
+            document.getElementById('search-input').placeholder = UI_TEXT[currentLang].searchPlaceholder;
+            document.getElementById('lang-btn').innerText = UI_TEXT[currentLang].btnLang;
+
+            // 2. 데이터 필터링 및 검색
+            const grid = document.getElementById('grid');
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            
+            const filteredData = DB.filter(item => {
+                const data = item[currentLang];
+                // 태그 필터 (all이면 통과, 아니면 태그 포함 여부 확인)
+                const tagMatch = currentFilter === 'all' || item.tags.some(t => t.includes(currentFilter));
+                // 검색어 필터 (제목, 설명, 재료 중 포함 여부)
+                const searchMatch = data.title.toLowerCase().includes(searchInput) || 
+                                    data.desc.toLowerCase().includes(searchInput) ||
+                                    data.ingredients.toLowerCase().includes(searchInput);
+                return tagMatch && searchMatch;
+            });
+
+            // 3. 그리드 렌더링
+            if (filteredData.length === 0) {
+                grid.innerHTML = `<div class="no-result">${UI_TEXT[currentLang].noResult}</div>`;
+                return;
+            }
+
+            grid.innerHTML = filteredData.map(item => {
+                const content = item[currentLang];
+                // 태그 표시 (앞에 # 붙이기)
+                const tagsHtml = item.tags.map(t => `#${t}`).join(' ');
+                
+                return `
+                    <div class="card" onclick="alert('${content.title} 상세 페이지로 이동 (데모)')">
+                        <div class="card-img-area">${item.emoji}</div>
+                        <div class="card-body">
+                            <div class="card-tags">${tagsHtml}</div>
+                            <h3 class="card-title">${content.title}</h3>
+                            <p class="card-desc">${content.desc}</p>
+                            <div class="card-footer">
+                                <span class="price-tag">💰 ${content.price}</span>
+                                <span class="likes">❤️ ${item.likes}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 언어 토글
+        function toggleLanguage() {
+            currentLang = currentLang === 'ko' ? 'en' : 'ko';
+            document.documentElement.lang = currentLang; // 접근성 위해 html 태그 언어 변경
+            render();
+        }
+
+        // 카테고리 필터 설정
+        function setFilter(filterType) {
+            currentFilter = filterType;
+            
+            // 버튼 활성화 상태 변경
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText.includes(filterType) || (filterType === 'all' && btn.innerText === 'ALL')) {
+                    btn.classList.add('active');
+                }
+            });
+            render();
+        }
+
+        // 검색 기능
+        function filterData() {
+            render();
+        }
+
+        // 초기 실행
+        window.onload = render;
+
+    </script>
+</body>
+</html>
